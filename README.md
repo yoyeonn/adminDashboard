@@ -34,6 +34,14 @@ TailAdmin Angular comes with essential UI components and layouts for building **
 | **Design Files** | Basic Figma design files | Complete Figma design system file |
 | **Support** | Community support| Email support |
 
+### Other Versions
+
+- [Next.js Version](https://github.com/TailAdmin/free-nextjs-admin-dashboard)
+- [React.js Version](https://github.com/TailAdmin/free-react-tailwind-admin-dashboard)
+- [Vue.js Version](https://github.com/TailAdmin/vue-tailwind-admin-dashboard)
+- [Angular Version](https://github.com/TailAdmin/free-angular-tailwind-dashboard)
+- [Laravel Version](https://github.com/TailAdmin/tailadmin-laravel)
+
 ## Installation
 
 ### Prerequisites
