@@ -1,13 +1,11 @@
 import { CommonModule } from '@angular/common';
 import {
   Component,
-  Input,
-  Output,
-  EventEmitter,
   ElementRef,
-  OnInit,
-  OnDestroy,
-  HostListener
+  EventEmitter,
+  HostListener,
+  Input,
+  Output
 } from '@angular/core';
 
 @Component({
@@ -52,8 +50,8 @@ export class ModalComponent {
     event.stopPropagation();
   }
 
-  @HostListener('document:keydown.escape', ['$event'])
-  onEscape(event: KeyboardEvent) {
+ @HostListener('document:keydown.escape')
+  onEscape() {
     if (this.isOpen) {
       this.close.emit();
     }
