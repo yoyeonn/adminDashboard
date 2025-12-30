@@ -1,29 +1,49 @@
-import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+
+import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
+import flatpickr from 'flatpickr';
+import { Instance } from 'flatpickr/dist/types/instance';
 import { NgApexchartsModule } from 'ng-apexcharts';
 
 import {
   ApexAxisChartSeries,
   ApexChart,
-  ApexXAxis,
-  ApexStroke,
-  ApexFill,
-  ApexMarkers,
-  ApexGrid,
   ApexDataLabels,
-  ApexTooltip,
-  ApexYAxis,
+  ApexFill,
+  ApexGrid,
   ApexLegend,
-  ApexOptions
+  ApexMarkers,
+  ApexStroke,
+  ApexTooltip,
+  ApexXAxis,
+  ApexYAxis,
 } from 'ng-apexcharts';
 import { ChartTabComponent } from '../../common/chart-tab/chart-tab.component';
 
 @Component({
   selector: 'app-statics-chart',
-  imports: [CommonModule,NgApexchartsModule,ChartTabComponent],
-  templateUrl: './statics-chart.component.html'
+  imports: [NgApexchartsModule, ChartTabComponent],
+  templateUrl: './statics-chart.component.html',
 })
-export class StatisticsChartComponent {
+export class StatisticsChartComponent implements AfterViewInit {
+  @ViewChild('datepicker') datepicker!: ElementRef<HTMLInputElement>;
+
+  ngAfterViewInit() {
+    flatpickr(this.datepicker.nativeElement, {
+      mode: 'range',
+      static: true,
+      monthSelectorType: 'static',
+      dateFormat: 'M j, Y',
+      defaultDate: [new Date(Date.now() - 6 * 24 * 60 * 60 * 1000), new Date()],
+      onReady: (selectedDates: Date[], dateStr: string, instance: Instance) => {
+        (instance.element as HTMLInputElement).value = dateStr.replace('to', '-');
+        const customClass = instance.element.getAttribute('data-class');
+        instance.calendarContainer?.classList.add(customClass!);
+      },
+      onChange: (selectedDates: Date[], dateStr: string, instance: Instance) => {
+        (instance.element as HTMLInputElement).value = dateStr.replace('to', '-');
+      },
+    });
+  }
   public series: ApexAxisChartSeries = [
     {
       name: 'Sales',
@@ -39,14 +59,14 @@ export class StatisticsChartComponent {
     fontFamily: 'Outfit, sans-serif',
     height: 310,
     type: 'area',
-    toolbar: { show: false }
+    toolbar: { show: false },
   };
 
   public colors: string[] = ['#465FFF', '#9CB9FF'];
 
   public stroke: ApexStroke = {
     curve: 'straight',
-    width: [2, 2]
+    width: [2, 2],
   };
 
   public fill: ApexFill = {
@@ -54,55 +74,65 @@ export class StatisticsChartComponent {
     gradient: {
       opacityFrom: 0.55,
       opacityTo: 0,
-    }
+    },
   };
 
   public markers: ApexMarkers = {
     size: 0,
     strokeColors: '#fff',
     strokeWidth: 2,
-    hover: { size: 6 }
+    hover: { size: 6 },
   };
 
   public grid: ApexGrid = {
     xaxis: { lines: { show: false } },
-    yaxis: { lines: { show: true } }
+    yaxis: { lines: { show: true } },
   };
 
   public dataLabels: ApexDataLabels = { enabled: false };
 
   public tooltip: ApexTooltip = {
     enabled: true,
-    x: { format: 'dd MMM yyyy' }
+    x: { format: 'dd MMM yyyy' },
   };
 
   public xaxis: ApexXAxis = {
     type: 'category',
     categories: [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ],
     axisBorder: { show: false },
     axisTicks: { show: false },
-    tooltip: { enabled: false }
+    tooltip: { enabled: false },
   };
 
   public yaxis: ApexYAxis = {
     labels: {
       style: {
         fontSize: '12px',
-        colors: ['#6B7280']
-      }
+        colors: ['#6B7280'],
+      },
     },
     title: {
       text: '',
-      style: { fontSize: '0px' }
-    }
+      style: { fontSize: '0px' },
+    },
   };
 
   public legend: ApexLegend = {
     show: false,
     position: 'top',
-    horizontalAlign: 'left'
+    horizontalAlign: 'left',
   };
 }
