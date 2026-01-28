@@ -1,0 +1,181 @@
+<div class="mb-4 flex items-center justify-between">
+  <div>
+    <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
+      Pack Reservation Details
+    </h2>
+
+    <div class="text-xs text-gray-500 dark:text-gray-400" *ngIf="item as r">
+      #{{ r.id }} • Created: {{ fmtDateTime(r.createdAt) }}
+    </div>
+  </div>
+
+  <div class="flex items-center gap-2">
+    <a
+      routerLink="/reservations"
+      class="px-4 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-white/[0.05]"
+    >
+      Back
+    </a>
+
+    <button
+      (click)="downloadPdf()"
+      [disabled]="!item?.id"
+      class="px-4 py-2 text-sm rounded-lg bg-brand-500 text-white disabled:opacity-60 hover:opacity-90"
+    >
+      Download invoice (PDF)
+    </button>
+  </div>
+</div>
+
+<div *ngIf="error" class="text-red-500 mb-3">{{ error }}</div>
+
+<div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
+  <div class="p-4" *ngIf="loading">Loading...</div>
+
+  <div class="p-4 space-y-6" *ngIf="!loading && item as r">
+
+    <!-- TOP cards -->
+    <div class="grid gap-4 md:grid-cols-4">
+
+      <div class="rounded-xl border border-gray-200 p-4 dark:border-gray-800">
+        <div class="text-xs text-gray-500 dark:text-gray-400">Pack</div>
+        <div class="mt-1 font-semibold text-gray-900 dark:text-white">
+          {{ r.packName || '—' }}
+        </div>
+        <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+          Pack ID: {{ r.packId ?? '—' }}
+        </div>
+      </div>
+
+      <div class="rounded-xl border border-gray-200 p-4 dark:border-gray-800">
+        <div class="text-xs text-gray-500 dark:text-gray-400">Destination</div>
+        <div class="mt-1 font-semibold text-gray-900 dark:text-white">
+          {{ r.destinationName || '—' }}
+        </div>
+        <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+          Location: {{ (r.packLocation ?? r.location) || '—' }}
+        </div>
+      </div>
+
+      <div class="rounded-xl border border-gray-200 p-4 dark:border-gray-800">
+        <div class="text-xs text-gray-500 dark:text-gray-400">Hotel</div>
+        <div class="mt-1 font-semibold text-gray-900 dark:text-white">
+          {{ r.hotelName || '—' }}
+        </div>
+        <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+          Price / person / night: {{ money(r.pricePerPerson) }}
+        </div>
+      </div>
+
+      <div class="rounded-xl border border-gray-200 p-4 dark:border-gray-800">
+        <div class="text-xs text-gray-500 dark:text-gray-400">Total</div>
+        <div class="mt-1 text-xl font-bold text-gray-900 dark:text-white">
+          {{ money(r.totalAmount) }}
+        </div>
+        <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+          Paying people: {{ payingPeople() }} • Nights: {{ nights() }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Dates -->
+    <div class="rounded-xl border border-gray-200 p-4 dark:border-gray-800">
+      <div class="font-medium text-gray-900 dark:text-white mb-3">Dates</div>
+
+      <div class="grid gap-4 md:grid-cols-3">
+        <div>
+          <div class="text-xs text-gray-500 dark:text-gray-400">Check-in</div>
+          <div class="mt-1 text-gray-900 dark:text-white font-semibold">
+            {{ fmtDate(r.checkIn) }}
+          </div>
+        </div>
+
+        <div>
+          <div class="text-xs text-gray-500 dark:text-gray-400">Check-out</div>
+          <div class="mt-1 text-gray-900 dark:text-white font-semibold">
+            {{ fmtDate(r.checkOut) }}
+          </div>
+        </div>
+
+        <div>
+          <div class="text-xs text-gray-500 dark:text-gray-400">Nights</div>
+          <div class="mt-1 text-gray-900 dark:text-white font-semibold">
+            {{ nights() }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Meal plan -->
+    <div class="rounded-xl border border-gray-200 p-4 dark:border-gray-800">
+      <div class="font-medium text-gray-900 dark:text-white mb-3">Formule</div>
+
+      <div class="grid gap-4 md:grid-cols-3">
+        <div>
+          <div class="text-xs text-gray-500 dark:text-gray-400">Meal plan</div>
+          <div class="mt-1 font-semibold text-gray-900 dark:text-white">
+            {{ mealPlanLabel(r.mealPlan) || '—' }}
+          </div>
+        </div>
+
+        <div>
+          <div class="text-xs text-gray-500 dark:text-gray-400">Extra / person / night</div>
+          <div class="mt-1 font-semibold text-gray-900 dark:text-white">
+            {{ money(r.mealPlanExtra) }}
+          </div>
+        </div>
+
+        <div>
+          <div class="text-xs text-gray-500 dark:text-gray-400">Paying people</div>
+          <div class="mt-1 font-semibold text-gray-900 dark:text-white">
+            {{ payingPeople() }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rooms -->
+    <div class="rounded-xl border border-gray-200 p-4 dark:border-gray-800">
+      <div class="font-medium text-gray-900 dark:text-white mb-3">Rooms & Occupancy</div>
+
+      <div class="text-sm text-gray-600 dark:text-gray-300 mb-3">
+        Adults: <b>{{ totalAdultsFromRooms() }}</b> •
+        Children: <b>{{ totalChildrenFromRooms() }}</b> •
+        Babies: <b>{{ totalBabiesFromRooms() }}</b> •
+        Paying: <b>{{ payingPeopleFromRooms() }}</b>
+      </div>
+
+      <div class="overflow-x-auto" *ngIf="roomRows().length; else noRooms">
+        <table class="min-w-full text-sm">
+          <thead>
+            <tr class="text-left text-xs text-gray-500 dark:text-gray-400">
+              <th class="py-2 pr-4">Room</th>
+              <th class="py-2 pr-4">Adults</th>
+              <th class="py-2 pr-4">Children</th>
+              <th class="py-2 pr-4">Babies</th>
+              <th class="py-2 pr-4">Paying</th>
+              <th class="py-2 pr-4">Price / person</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let x of roomRows()" class="border-t border-gray-100 dark:border-gray-800">
+              <td class="py-2 pr-4 font-semibold text-gray-900 dark:text-white">{{ x.name }}</td>
+              <td class="py-2 pr-4">{{ x.adults }}</td>
+              <td class="py-2 pr-4">{{ x.children }}</td>
+              <td class="py-2 pr-4">{{ x.babies }}</td>
+              <td class="py-2 pr-4 font-semibold">{{ x.paying }}</td>
+              <td class="py-2 pr-4">{{ money(x.price) }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <ng-template #noRooms>
+        <div class="text-sm text-gray-500 dark:text-gray-400">
+          No rooms data (CSV fields empty).
+        </div>
+      </ng-template>
+    </div>
+
+  </div>
+</div>

@@ -32,6 +32,8 @@ import { PackDetailComponent } from './pages/pack-detail/pack-detail.component';
 import { PackEditComponent } from './pages/pack-edit/pack-edit.component';
 import { ReservationsComponent } from './pages/reservations/reservations.component';
 import { ReservationDetailComponent } from './pages/reservation-detail/reservation-detail.component';
+import { DestinationReservationDetailComponent } from './pages/destination-reservation-detail/destination-reservation-detail.component';
+import { PackReservationDetailComponent } from './pages/pack-reservation-detail/pack-reservation-detail.component';
 
 export const routes: Routes = [
   {
@@ -119,6 +121,16 @@ export const routes: Routes = [
         path: 'reservations/:id',
         component: ReservationDetailComponent,
         title: 'Reservation Details | TailAdmin',
+      },
+      {
+        path: 'destination-reservations/:id',
+        component: DestinationReservationDetailComponent,
+        title: 'Destination Reservation Details | TailAdmin',
+      },
+      {
+        path: 'pack-reservations/:id',
+        component: PackReservationDetailComponent,
+        title: 'Pack Reservation Details | TailAdmin',
       },
       {
         path:'profile',

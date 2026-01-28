@@ -3,7 +3,9 @@ import { Component, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { ReservationService } from '../../shared/services/reservation.service';
 import { ReservationDTO } from '../../shared/models/reservation-dto';
+import { forkJoin } from 'rxjs';
 
+type Tab = 'HOTELS' | 'DESTINATIONS' | 'PACKS';
 
 @Component({
   selector: 'app-reservations',
@@ -12,9 +14,20 @@ import { ReservationDTO } from '../../shared/models/reservation-dto';
   styleUrl: './reservations.component.css',
 })
 export class ReservationsComponent implements OnInit {
- loading = false;
+  loading = false;
   error: string | null = null;
-  items: ReservationDTO[] = [];
+
+  tab: Tab = 'HOTELS';
+
+  hotelItems: ReservationDTO[] = [];
+  destinationItems: ReservationDTO[] = [];
+  packItems: ReservationDTO[] = [];
+
+  get items(): ReservationDTO[] {
+    if (this.tab === 'HOTELS') return this.hotelItems;
+    if (this.tab === 'DESTINATIONS') return this.destinationItems;
+    return this.packItems;
+  }
 
   constructor(private reservationService: ReservationService) {}
 
@@ -26,9 +39,15 @@ export class ReservationsComponent implements OnInit {
     this.loading = true;
     this.error = null;
 
-    this.reservationService.getAllAdmin().subscribe({
-      next: (data) => {
-        this.items = data ?? [];
+    forkJoin({
+      hotels: this.reservationService.getAllAdmin(),
+      dests: this.reservationService.getAllAdminDestinations(),
+      packs: this.reservationService.getAllAdminPacks(), // ✅ NEW
+    }).subscribe({
+      next: ({ hotels, dests, packs }) => {
+        this.hotelItems = hotels ?? [];
+        this.destinationItems = dests ?? [];
+        this.packItems = packs ?? [];
         this.loading = false;
       },
       error: (err) => {
@@ -38,14 +57,23 @@ export class ReservationsComponent implements OnInit {
     });
   }
 
+  setTab(t: Tab) {
+    this.tab = t;
+  }
+
   fmtDate(v?: string) {
     if (!v) return '—';
-    // works with ISO
     return new Date(v).toLocaleDateString();
   }
 
   money(v?: number) {
     if (v == null) return '—';
     return `${v.toFixed(2)} TND`;
+  }
+
+  detailsLink(r: ReservationDTO) {
+    if (this.tab === 'HOTELS') return ['/reservations', r.id];
+    if (this.tab === 'DESTINATIONS') return ['/destination-reservations', r.id];
+    return ['/pack-reservations', r.id];
   }
 }

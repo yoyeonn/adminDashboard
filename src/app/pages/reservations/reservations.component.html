@@ -1,11 +1,45 @@
 <div class="mb-4 flex items-center justify-between">
   <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Reservations</h2>
-  <button
-    (click)="load()"
-    class="px-4 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-white/[0.05]"
-  >
-    Refresh
-  </button>
+
+  <div class="flex items-center gap-2">
+    <button
+      (click)="setTab('HOTELS')"
+      class="px-3 py-2 text-sm rounded-lg border"
+      [ngClass]="tab === 'HOTELS'
+        ? 'bg-brand-500 text-white border-brand-500'
+        : 'border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-white/[0.05]'"
+    >
+      Hotels ({{ hotelItems.length }})
+    </button>
+
+    <button
+      (click)="setTab('DESTINATIONS')"
+      class="px-3 py-2 text-sm rounded-lg border"
+      [ngClass]="tab === 'DESTINATIONS'
+        ? 'bg-brand-500 text-white border-brand-500'
+        : 'border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-white/[0.05]'"
+    >
+      Destinations ({{ destinationItems.length }})
+    </button>
+
+    <!-- ✅ NEW -->
+    <button
+      (click)="setTab('PACKS')"
+      class="px-3 py-2 text-sm rounded-lg border"
+      [ngClass]="tab === 'PACKS'
+        ? 'bg-brand-500 text-white border-brand-500'
+        : 'border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-white/[0.05]'"
+    >
+      Packs ({{ packItems.length }})
+    </button>
+
+    <button
+      (click)="load()"
+      class="px-4 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-white/[0.05]"
+    >
+      Refresh
+    </button>
+  </div>
 </div>
 
 <div *ngIf="error" class="text-red-500 mb-3">{{ error }}</div>
@@ -22,7 +56,11 @@
       <thead class="border-b border-gray-200 dark:border-gray-800">
         <tr class="text-left text-gray-600 dark:text-gray-300">
           <th class="p-3">ID</th>
-          <th class="p-3">Hotel</th>
+
+          <th class="p-3" *ngIf="tab === 'HOTELS'">Hotel</th>
+          <th class="p-3" *ngIf="tab === 'DESTINATIONS'">Destination</th>
+          <th class="p-3" *ngIf="tab === 'PACKS'">Pack</th>
+
           <th class="p-3">User</th>
           <th class="p-3">Check-in</th>
           <th class="p-3">Check-out</th>
@@ -37,17 +75,39 @@
           class="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-white/[0.04]"
         >
           <td class="p-3 font-medium text-gray-900 dark:text-white">#{{ r.id }}</td>
-          <td class="p-3">{{ r.hotelName || '—' }}</td>
+
+          <!-- HOTELS -->
+          <td class="p-3" *ngIf="tab === 'HOTELS'">
+            <div class="text-gray-900 dark:text-white">{{ r.hotelName || '—' }}</div>
+            <div class="text-xs text-gray-500">{{ r.hotelLocation || '' }}</div>
+          </td>
+
+          <!-- DESTINATIONS -->
+          <td class="p-3" *ngIf="tab === 'DESTINATIONS'">
+            <div class="text-gray-900 dark:text-white">{{ r.destinationName || '—' }}</div>
+            <div class="text-xs text-gray-500">
+              {{ (r.destinationCountry || '') + (r.destinationLocation ? ' • ' + r.destinationLocation : '') }}
+            </div>
+          </td>
+
+          <!-- ✅ PACKS -->
+          <td class="p-3" *ngIf="tab === 'PACKS'">
+            <div class="text-gray-900 dark:text-white">{{ r.packName || '—' }}</div>
+            <div class="text-xs text-gray-500">{{ r.packLocation || '' }}</div>
+          </td>
+
           <td class="p-3">
             <div class="text-gray-900 dark:text-white">{{ r.userName || '—' }}</div>
             <div class="text-xs text-gray-500">{{ r.userEmail || '' }}</div>
           </td>
+
           <td class="p-3">{{ fmtDate(r.checkIn) }}</td>
           <td class="p-3">{{ fmtDate(r.checkOut) }}</td>
           <td class="p-3 font-semibold">{{ money(r.totalAmount) }}</td>
+
           <td class="p-3 text-right">
             <a
-              [routerLink]="['/reservations', r.id]"
+              [routerLink]="detailsLink(r)"
               class="px-3 py-1.5 text-xs rounded-lg bg-brand-500 text-white hover:opacity-90"
             >
               Details

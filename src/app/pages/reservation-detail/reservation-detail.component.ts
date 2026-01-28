@@ -160,7 +160,7 @@ loading = false;
   const id = this.item?.id;
   if (!id) return;
 
-  this.reservationService.getInvoiceJson(id).subscribe({
+  this.reservationService.getInvoiceJsonAdmin(id).subscribe({
     next: (inv) => {
       const doc = new jsPDF();
       const now = new Date();
@@ -181,7 +181,6 @@ loading = false;
       const roomChildren= split(inv.roomChildren).map(Number);
       const roomBabies  = split(inv.roomBabies).map(Number);
 
-      // header
       doc.setFontSize(16);
       doc.text('FACTURE - Réservation Hôtel', 14, 18);
 
@@ -192,7 +191,6 @@ loading = false;
       doc.setFontSize(12);
       doc.text(`Hôtel: ${inv.hotelName || '-'}`, 14, 44);
 
-      // optional client info if you added in backend
       doc.setFontSize(10);
       if (inv.userName || inv.userEmail) {
         doc.text(`Client: ${inv.userName || '-'} (${inv.userEmail || '-'})`, 14, 52);
@@ -205,14 +203,13 @@ loading = false;
       doc.text(`Formule: ${planLabel}`, 14, 80);
       doc.text(`Supplément formule: ${planExtra} TND / personne / nuit`, 14, 86);
 
-      // build rows + numeric totals
       let totalPerNightNum = 0;
 
       const body = roomNames.map((name: string, i: number) => {
         const a = roomAdults[i] ?? 0;
         const c = roomChildren[i] ?? 0;
         const b = roomBabies[i] ?? 0;
-        const paying = a + c; // babies free
+        const paying = a + c;
         const pricePerPerson = roomPrices[i] ?? 0;
 
         const roomPerNight = paying * pricePerPerson;
@@ -245,11 +242,8 @@ loading = false;
         styles: { fontSize: 8 },
       });
 
-      // totals
       const totalAllNum =
-        inv.totalAmount != null
-          ? Number(inv.totalAmount) // backend truth
-          : totalPerNightNum * nights;
+        inv.totalAmount != null ? Number(inv.totalAmount) : totalPerNightNum * nights;
 
       const finalY = (doc as any).lastAutoTable?.finalY || 96;
 
@@ -267,5 +261,6 @@ loading = false;
     },
   });
 }
+
 
 }

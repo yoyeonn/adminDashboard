@@ -7,9 +7,17 @@ export type ReservationDTO = {
 
   hotelId?: number;
   hotelName?: string;
-
-  // ✅ add this (front only)
   hotelLocation?: string;
+
+  packId?: number;
+  packName?: string;
+  packLocation?: string;
+
+
+  destinationId?: number;
+  destinationName?: string;
+  destinationCountry?: string;
+  destinationLocation?: string;
 
   checkIn?: string;
   checkOut?: string;
@@ -23,4 +31,6 @@ export type ReservationDTO = {
 
   createdAt?: string;
   roomNames?: string[];
+
+  type?: 'HOTEL' | 'DESTINATION' | 'PACK';
 };

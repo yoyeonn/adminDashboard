@@ -68,4 +68,16 @@ loading = false;
       },
     });
   }
+
+  money(v?: number) {
+  if (v == null || Number.isNaN(v)) return '—';
+  return `${Number(v).toFixed(2)} TND`;
+}
+
+firstRoomPrice(): number {
+  const rooms = (this.hotel as any)?.rooms ?? [];
+  if (!Array.isArray(rooms) || rooms.length === 0) return 0;
+  return Number(rooms[0]?.price || 0);
+}
+
 }

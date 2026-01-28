@@ -1,6 +1,16 @@
 <!-- HEADER -->
 <div class="mb-4 flex items-center justify-between">
-  <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Hotel Details</h2>
+  <div>
+    <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Hotel Details</h2>
+
+    <!-- ✅ Price (first room) -->
+    <div class="mt-1 text-sm text-gray-600 dark:text-gray-300" *ngIf="firstRoomPrice() > 0">
+      Starting price (1st room): <b>{{ money(firstRoomPrice()) }}</b> / night
+    </div>
+    <div class="mt-1 text-sm text-gray-500 dark:text-gray-400" *ngIf="firstRoomPrice() === 0">
+      Starting price: —
+    </div>
+  </div>
 
   <div class="flex gap-2">
     <a
@@ -11,12 +21,12 @@
     </a>
 
     <button
-    type="button"
-    (click)="onDelete()"
-    [disabled]="deleting"
-    class="px-4 py-2 text-sm rounded-lg bg-red-600 text-white disabled:opacity-60 hover:bg-red-700"
+      type="button"
+      (click)="onDelete()"
+      [disabled]="deleting"
+      class="px-4 py-2 text-sm rounded-lg bg-red-600 text-white disabled:opacity-60 hover:bg-red-700"
     >
-    {{ deleting ? 'Deleting...' : 'Delete' }}
+      {{ deleting ? 'Deleting...' : 'Delete' }}
     </button>
 
     <a
@@ -27,6 +37,7 @@
     </a>
   </div>
 </div>
+
 
 <div *ngIf="loading" class="text-gray-500 dark:text-gray-400">Loading...</div>
 <div *ngIf="error" class="text-red-500 mb-3">{{ error }}</div>
